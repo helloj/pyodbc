@@ -49,8 +49,13 @@ typedef unsigned long long UINT64;
 #include <windows.h>
 #endif
 
+#ifdef DBMAKER
+#include <odbc.h>
+#include <sqlucode.h>
+#else
 #include <sql.h>
 #include <sqlext.h>
+#endif
 
 #if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
 typedef int Py_ssize_t;

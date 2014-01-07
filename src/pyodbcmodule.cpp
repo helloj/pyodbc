@@ -441,6 +441,8 @@ static PyObject* mod_datasources(PyObject* self)
         Py_BEGIN_ALLOW_THREADS
         ret = SQLDataSources(henv, nDirection, szDSN,  _countof(szDSN),  &cbDSN, szDesc, _countof(szDesc), &cbDesc);
         Py_END_ALLOW_THREADS
+        if (!cbDSN || !cbDesc)
+            ret = SQL_NO_DATA;
         if (!SQL_SUCCEEDED(ret))
             break;
 
@@ -760,7 +762,9 @@ static const ConstantDef aConstants[] = {
     MAKECONST(SQL_INTERVAL_HOUR_TO_MINUTE),
     MAKECONST(SQL_INTERVAL_HOUR_TO_SECOND),
     MAKECONST(SQL_INTERVAL_MINUTE_TO_SECOND),
+#ifdef SQL_GUID
     MAKECONST(SQL_GUID),
+#endif
     MAKECONST(SQL_NULLABLE),
     MAKECONST(SQL_NO_NULLS),
     MAKECONST(SQL_NULLABLE_UNKNOWN),
@@ -1019,7 +1023,11 @@ initpyodbc(void)
     PyModule_AddIntConstant(module, "threadsafety", 1);
     PyModule_AddStringConstant(module, "apilevel", "2.0");
     PyModule_AddStringConstant(module, "paramstyle", "qmark");
+#ifdef DBMAKER
+    PyModule_AddObject(module, "pooling", Py_False);
+#else
     PyModule_AddObject(module, "pooling", Py_True);
+#endif
     Py_INCREF(Py_True);
     PyModule_AddObject(module, "lowercase", Py_False);
     Py_INCREF(Py_False);

@@ -116,29 +116,43 @@ static PyObject* CnxnInfo_New(Connection* cnxn)
         p->need_long_data_len = (szYN[0] == 'Y');
 
     // These defaults are tiny, but are necessary for Access.
+#ifndef DBMAKER
     p->varchar_maxlength = 255;
     p->wvarchar_maxlength = 255;
     p->binary_maxlength  = 510;
+#else
+    p->varchar_maxlength = 4096;
+    p->wvarchar_maxlength = 4096;
+    p->binary_maxlength  = 4096;
+#endif
 
     HSTMT hstmt = 0;
     if (SQL_SUCCEEDED(SQLAllocHandle(SQL_HANDLE_STMT, cnxn->hdbc, &hstmt)))
     {
         SQLINTEGER columnsize;
-        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_TYPE_TIMESTAMP)) && SQL_SUCCEEDED(SQLFetch(hstmt)))
+        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_TYPE_TIMESTAMP)) && SQL_SUCCEEDED(SQLFetch(hstmt))) {
             if (SQL_SUCCEEDED(SQLGetData(hstmt, 3, SQL_INTEGER, &columnsize, sizeof(columnsize), 0)))
                 p->datetime_precision = (int)columnsize;
+            SQLCloseCursor(hstmt);
+        }
 
-        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_VARCHAR)) && SQL_SUCCEEDED(SQLFetch(hstmt)))
+        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_VARCHAR)) && SQL_SUCCEEDED(SQLFetch(hstmt))) {
             if (SQL_SUCCEEDED(SQLGetData(hstmt, 3, SQL_INTEGER, &columnsize, sizeof(columnsize), 0)))
                 p->varchar_maxlength = (int)columnsize;
+            SQLCloseCursor(hstmt);
+        }
 
-        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_WVARCHAR)) && SQL_SUCCEEDED(SQLFetch(hstmt)))
+        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_WVARCHAR)) && SQL_SUCCEEDED(SQLFetch(hstmt))) {
             if (SQL_SUCCEEDED(SQLGetData(hstmt, 3, SQL_INTEGER, &columnsize, sizeof(columnsize), 0)))
                 p->wvarchar_maxlength = (int)columnsize;
+            SQLCloseCursor(hstmt);
+        }
 
-        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_BINARY)) && SQL_SUCCEEDED(SQLFetch(hstmt)))
+        if (SQL_SUCCEEDED(SQLGetTypeInfo(hstmt, SQL_BINARY)) && SQL_SUCCEEDED(SQLFetch(hstmt))) {
             if (SQL_SUCCEEDED(SQLGetData(hstmt, 3, SQL_INTEGER, &columnsize, sizeof(columnsize), 0)))
                 p->binary_maxlength = (int)columnsize;
+            SQLCloseCursor(hstmt);
+        }
 
         SQLFreeStmt(hstmt, SQL_CLOSE);
     }

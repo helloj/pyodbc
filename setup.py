@@ -188,7 +188,14 @@ def get_compiler_settings(version_str):
             settings['define_macros'].append(('SQL_WCHART_CONVERT', '1'))
 
         # What is the proper way to detect iODBC, MyODBC, unixODBC, etc.?
-        settings['libraries'].append('odbc')
+        #settings['libraries'].append('odbc')
+
+        # Support DBMaker client driver
+        settings['define_macros'].append(('DBMAKER','1'))
+        settings['include_dirs'] = ['/home/dbmaker/bundle/include']
+        settings['runtime_library_dirs'] = ['/home/dbmaker/bundle']
+        settings['library_dirs'] = ['/home/dbmaker/bundle']
+        settings['libraries'].append('dmapic')
 
     return settings
 

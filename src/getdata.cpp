@@ -290,8 +290,10 @@ static PyObject* GetDataString(Cursor* cur, Py_ssize_t iCol)
     ColumnInfo* pinfo = &cur->colinfos[iCol];
 
     // Some Unix ODBC drivers do not return the correct length.
+#ifdef SQL_GUID
     if (pinfo->sql_type == SQL_GUID)
         pinfo->column_size = 36;
+#endif
 
     SQLSMALLINT nTargetType;
 
@@ -300,7 +302,9 @@ static PyObject* GetDataString(Cursor* cur, Py_ssize_t iCol)
     case SQL_CHAR:
     case SQL_VARCHAR:
     case SQL_LONGVARCHAR:
+#ifdef SQL_GUID
     case SQL_GUID:
+#endif
     case SQL_SS_XML:
 #if PY_MAJOR_VERSION < 3
         if (cur->cnxn->unicode_results)
@@ -717,7 +721,9 @@ PyObject* GetData(Cursor* cur, Py_ssize_t iCol)
     case SQL_CHAR:
     case SQL_VARCHAR:
     case SQL_LONGVARCHAR:
+#ifdef SQL_GUID
     case SQL_GUID:
+#endif
     case SQL_SS_XML:
 #if PY_VERSION_HEX >= 0x02060000
     case SQL_BINARY:

@@ -150,7 +150,9 @@ static PyObject* PythonTypeFromSqlType(Cursor* cur, const SQLCHAR* name, SQLSMAL
     case SQL_CHAR:
     case SQL_VARCHAR:
     case SQL_LONGVARCHAR:
+#ifdef SQL_GUID
     case SQL_GUID:
+#endif
     case SQL_SS_XML:
 #if PY_MAJOR_VERSION < 3
         if (cur->cnxn->unicode_results)
