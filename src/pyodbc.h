@@ -50,8 +50,9 @@ typedef unsigned long long UINT64;
 #endif
 
 #ifdef DBMAKER
-#include <odbc.h>
-#include <sqlucode.h>
+# include <odbc.h>
+# include <sqlucode.h>
+# define DWORD UDWORD
 #else
 #include <sql.h>
 #include <sqlext.h>

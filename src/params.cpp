@@ -754,7 +754,8 @@ bool PrepareAndBind(Cursor* cur, PyObject* pSql, PyObject* original_params, bool
         // in paramInfos and will be released in FreeInfos (which is always eventually called).
 
         PyObject* param = PySequence_GetItem(original_params, i + params_offset);
-        if (!GetParameterInfo(cur, i, param, cur->paramInfos[i]))
+        if (!GetParameterInfo(cur, i, param, cur->paramInfos[i]) ||
+            !GetParamType(cur, i, cur->paramInfos[i].ParameterType))
         {
             FreeInfos(cur->paramInfos, cParams);
             cur->paramInfos = 0;
