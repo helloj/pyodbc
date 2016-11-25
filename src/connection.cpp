@@ -176,12 +176,6 @@ PyObject* Connection_New(PyObject* pConnectString, bool fAutoCommit, bool fAnsi,
         while (PyDict_Next(attrs_before, &pos, &key, &value))
         {
             int ikey = 0, ivalue = 0;
-#if PY_MAJOR_VERSION < 3
-            if (PyInt_Check(key))
-                ikey = PyInt_AsInt(key);
-            if (PyInt_Check(value))
-                ivalue = PyInt_AsInt(value);
-#endif
             if (PyLong_Check(key))
                 ikey = (int)PyLong_AsLong(key);
             if (PyLong_Check(value))
